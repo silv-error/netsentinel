@@ -1,0 +1,26 @@
+nag create ako ng new folder under ng custom_network_tools
+dito lahat naka lagay yung outside ng website natin like
+code pang connect sa cisco devices or APIs
+
+bale may ginawa akong dalawang file sa API folder isang 
+receiver at isang tester yung main_res_api siya yung mag hahandle ng api natin para mag communicate
+yung cisco python file at website 
+
+
+CISCO (PY file)  ==> main_res_api === > Website 
+
+
+yung tester naman if may changes ka sa fastAPI para madali yung testing or pwede ka 
+mag POSTMAN haha wala kasi akong postman kaya ganyan ginawa ko pero pwede mo disregard yan
+
+
+sa main_system.py naman nag add ako ng function pang send 
+sa api natin check mo yung line 219 pababa naka comment din yun if
+need mo reference.
+
+
+also for index.html nag create lang ako ng JS pang fetch 
+sa FASTAPI endpoint natin pwede mo rin check
+
+core folder / templates / index (para sa UI) 
+core folder / static / (para sa JS) 

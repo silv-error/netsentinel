@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              background: "#09090B",
+              foreground: "#FFFFFF",
+              primary: {
+                DEFAULT: "#FF4545",
+                hover: "#FF3030",
+              },
+              success: {
+                DEFAULT: "#10B981",
+                light: "rgba(16, 185, 129, 0.1)",
+              },
+              warning: {
+                DEFAULT: "#F59E0B",
+                light: "rgba(245, 158, 11, 0.1)",
+              },
+              danger: {
+                DEFAULT: "#EF4444",
+                light: "rgba(239, 68, 68, 0.1)",
+              },
+              info: {
+                DEFAULT: "#3B82F6",
+                light: "rgba(59, 130, 246, 0.1)",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/css">
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      .chart-line {
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .chart-line-primary {
+        stroke: #ff4545;
+      }
+
+      .chart-line-secondary {
+        stroke: #3b82f6;
+      }
+
+      .chart-dot {
+        fill: #ff4545;
+      }
+
+      .chart-grid {
+        stroke: rgba(255, 255, 255, 0.1);
+        stroke-dasharray: 2;
+      }
+
+      .chart-area {
+        fill-opacity: 0.1;
+      }
+
+      .chart-area-primary {
+        fill: #ff4545;
+      }
+
+      .chart-area-secondary {
+        fill: #3b82f6;
+      }
+
+      .progress-ring-circle {
+        transition: stroke-dashoffset 0.35s;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        left: 0;
+        min-width: 200px;
+        z-index: 1;
+        border-radius: 0.375rem;
+        overflow: hidden;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      .dropdown.active .dropdown-content {
+        display: block;
+      }
+
+      .dropdown-item {
+        display: block;
+        padding: 0.75rem 1rem;
+        transition: background-color 0.2s;
+        cursor: pointer;
+      }
+
+      .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .dropdown-arrow {
+        transition: transform 0.2s ease;
+      }
+    </style>
+  </head>
+  <body class="bg-[#09090B] text-white font-bold">
+    <div class="flex min-h-screen">
+      <aside class="w-64 bg-[#09090B] border-r border-white/10 p-4 flex flex-col justify-between">
+        <div>
+          <div class="mb-8">
+            <h1 class="text-xl font-bold tracking-tight">NetSentinel</h1>
+          </div>
+          <nav class="space-y-4">
+            <a
+              href="{% url 'dashboard' %}"
+              class="flex items-center px-3 py-2 text-sm font-bold rounded-md text-white/70 hover:bg-white/10 hover:text-white border border-white/10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              Dashboard
+            </a>
+            <a
+              href="{% url 'stats' %}"
+              class="flex items-center px-3 py-2 text-sm font-bold rounded-md bg-white/10 text-white border border-white/10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              Stats
+            </a>
+            <a
+              href="{% url 'network' %}"
+              class="flex items-center px-3 py-2 text-sm font-bold rounded-md text-white/70 hover:bg-white/10 hover:text-white border border-white/10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                />
+              </svg>
+              Networks
+            </a>
+          </nav>
+        </div>
+
+        <div class="mt-auto pt-4">
+          <a
+            href="{% url 'user_logout' %}"
+            class="flex items-center w-full px-3 py-2 text-sm font-bold rounded-md text-white hover:bg-white/10 border border-white/10 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Logout
+          </a>
+        </div>
+      </aside>
+
+      <main class="flex-1 p-6 overflow-auto">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold">Network Statistics</h1>
+
+          <div class="dropdown" id="time-dropdown">
+            <button
+              class="dropdown-toggle flex items-center justify-between px-4 py-2 bg-[#09090B] text-white rounded-md border border-white/30 w-40 hover:bg-white/5"
+            >
+              <span class="dropdown-label">Last 7 Days</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-2 dropdown-arrow"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="dropdown-content bg-[#09090B] text-white border border-white/30 mt-1 right-0">
+              <div class="dropdown-item" data-value="today">Today</div>
+              <div class="dropdown-item" data-value="yesterday">Yesterday</div>
+              <div class="dropdown-item" data-value="7days">Last 7 Days</div>
+              <div class="dropdown-item" data-value="30days">Last 30 Days</div>
+              <div class="dropdown-item" data-value="90days">Last 90 Days</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div class="bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-bold">Network Uptime</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-success"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+            </div>
+            <div class="flex items-center justify-center flex-1">
+              <div class="relative inline-flex items-center justify-center">
+                <svg class="w-32 h-32">
+                  <circle
+                    class="text-white/10"
+                    stroke-width="6"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="58"
+                    cx="64"
+                    cy="64"
+                  />
+                  <circle
+                    class="text-success progress-ring-circle"
+                    stroke-width="6"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="58"
+                    cx="64"
+                    cy="64"
+                    stroke-dasharray="364.4"
+                    stroke-dashoffset="36.4"
+                  />
+                </svg>
+                <span class="absolute text-3xl">99%</span>
+              </div>
+            </div>
+            <p class="text-sm text-white/70 mt-4 text-center">1.2% increase from last week</p>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-bold">Active Devices</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-success"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+            </div>
+            <div class="flex items-center justify-center flex-1">
+              <span class="text-4xl font-bold">142</span>
+              <span class="text-lg text-success ml-2">+12</span>
+            </div>
+            <p class="text-sm text-white/70 mt-4 text-center">8.4% increase from last week</p>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-bold">Avg. Response</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-danger"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
+            <div class="flex items-center justify-center flex-1">
+              <span class="text-4xl font-bold">24</span>
+              <span class="text-lg ml-2">ms</span>
+            </div>
+            <p class="text-sm text-white/70 mt-4 text-center">3.1% slower than last week</p>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-bold">Network Issues</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-success"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
+            <div class="flex items-center justify-center flex-1">
+              <span class="text-4xl font-bold">5</span>
+              <span class="text-lg text-success ml-2">-3</span>
+            </div>
+            <p class="text-sm text-white/70 mt-4 text-center">37.5% decrease from last week</p>
+          </div>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-lg p-6 mb-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold">Network Traffic</h2>
+
+            <div class="dropdown" id="chart-dropdown">
+              <button
+                class="dropdown-toggle flex items-center justify-between px-4 py-2 bg-[#09090B] text-white rounded-md border border-white/30 w-40 hover:bg-white/5"
+              >
+                <span class="dropdown-label">Bandwidth</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 ml-2 dropdown-arrow"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div class="dropdown-content bg-[#09090B] text-white border border-white/30 mt-1 right-0">
+                <div class="dropdown-item" data-value="bandwidth">Bandwidth</div>
+                <div class="dropdown-item" data-value="packets">Packets</div>
+                <div class="dropdown-item" data-value="errors">Errors</div>
+                <div class="dropdown-item" data-value="latency">Latency</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="h-80 relative">
+            <svg class="w-full h-full" viewBox="0 0 800 300">
+              <line class="chart-grid" x1="0" y1="0" x2="800" y2="0" />
+              <line class="chart-grid" x1="0" y1="60" x2="800" y2="60" />
+              <line class="chart-grid" x1="0" y1="120" x2="800" y2="120" />
+              <line class="chart-grid" x1="0" y1="180" x2="800" y2="180" />
+              <line class="chart-grid" x1="0" y1="240" x2="800" y2="240" />
+              <line class="chart-grid" x1="0" y1="300" x2="800" y2="300" />
+
+              <line class="chart-grid" x1="100" y1="0" x2="100" y2="300" />
+              <line class="chart-grid" x1="200" y1="0" x2="200" y2="300" />
+              <line class="chart-grid" x1="300" y1="0" x2="300" y2="300" />
+              <line class="chart-grid" x1="400" y1="0" x2="400" y2="300" />
+              <line class="chart-grid" x1="500" y1="0" x2="500" y2="300" />
+              <line class="chart-grid" x1="600" y1="0" x2="600" y2="300" />
+              <line class="chart-grid" x1="700" y1="0" x2="700" y2="300" />
+
+              <path
+                class="chart-area chart-area-primary"
+                d="M100,180 L200,60 L300,240 L400,200 L500,260 L600,240 L700,120 L700,300 L600,300 L500,300 L400,300 L300,300 L200,300 L100,300 Z"
+              />
+
+              <path
+                class="chart-line chart-line-primary"
+                d="M100,180 L200,60 L300,240 L400,200 L500,260 L600,240 L700,120"
+              />
+
+              <path
+                class="chart-line chart-line-secondary"
+                d="M100,220 L200,180 L300,200 L400,160 L500,220 L600,180 L700,140"
+              />
+
+              <circle class="chart-dot" cx="100" cy="180" r="4" />
+              <circle class="chart-dot" cx="200" cy="60" r="4" />
+              <circle class="chart-dot" cx="300" cy="240" r="4" />
+              <circle class="chart-dot" cx="400" cy="200" r="4" />
+              <circle class="chart-dot" cx="500" cy="260" r="4" />
+              <circle class="chart-dot" cx="600" cy="240" r="4" />
+              <circle class="chart-dot" cx="700" cy="120" r="4" />
+
+              <text x="100" y="320" text-anchor="middle" class="text-xs fill-white/70">Mon</text>
+              <text x="200" y="320" text-anchor="middle" class="text-xs fill-white/70">Tue</text>
+              <text x="300" y="320" text-anchor="middle" class="text-xs fill-white/70">Wed</text>
+              <text x="400" y="320" text-anchor="middle" class="text-xs fill-white/70">Thu</text>
+              <text x="500" y="320" text-anchor="middle" class="text-xs fill-white/70">Fri</text>
+              <text x="600" y="320" text-anchor="middle" class="text-xs fill-white/70">Sat</text>
+              <text x="700" y="320" text-anchor="middle" class="text-xs fill-white/70">Sun</text>
+
+              <text x="30" y="300" text-anchor="end" class="text-xs fill-white/70">0</text>
+              <text x="30" y="240" text-anchor="end" class="text-xs fill-white/70">5</text>
+              <text x="30" y="180" text-anchor="end" class="text-xs fill-white/70">10</text>
+              <text x="30" y="120" text-anchor="end" class="text-xs fill-white/70">15</text>
+              <text x="30" y="60" text-anchor="end" class="text-xs fill-white/70">20</text>
+            </svg>
+          </div>
+
+          <div class="flex justify-center mt-4 space-x-6">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-primary rounded-full mr-2"></div>
+              <span class="text-sm">Download</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-info rounded-full mr-2"></div>
+              <span class="text-sm">Upload</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white/5 border border-white/10 rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4">Device Status</h2>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-2 h-2 bg-success rounded-full mr-2"></div>
+                  <span>Online</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-lg font-bold mr-2">142</span>
+                  <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-success" style="width: 71%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-2 h-2 bg-warning rounded-full mr-2"></div>
+                  <span>Degraded</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-lg font-bold mr-2">38</span>
+                  <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-warning" style="width: 19%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-2 h-2 bg-danger rounded-full mr-2"></div>
+                  <span>Offline</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-lg font-bold mr-2">20</span>
+                  <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-danger" style="width: 10%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-md font-bold mt-8 mb-4">Device Types</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white/10 rounded-lg p-4 text-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 mx-auto mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                <div class="text-sm">Computers</div>
+                <div class="text-xl font-bold">86</div>
+              </div>
+              <div class="bg-white/10 rounded-lg p-4 text-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 mx-auto mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                <div class="text-sm">Mobile</div>
+                <div class="text-xl font-bold">54</div>
+              </div>
+              <div class="bg-white/10 rounded-lg p-4 text-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 mx-auto mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                  />
+                </svg>
+                <div class="text-sm">IoT</div>
+                <div class="text-xl font-bold">42</div>
+              </div>
+              <div class="bg-white/10 rounded-lg p-4 text-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 mx-auto mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+                  />
+                </svg>
+                <div class="text-sm">Network</div>
+                <div class="text-xl font-bold">18</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4">Location Performance</h2>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <div class="w-32 text-sm">Computer Lab 1</div>
+                <div class="flex-1 h-6 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-success flex items-center justify-end px-2 text-xs" style="width: 98%">98%</div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="w-32 text-sm">Computer Lab 2</div>
+                <div class="flex-1 h-6 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-warning flex items-center justify-end px-2 text-xs" style="width: 86%">86%</div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="w-32 text-sm">Computer Lab 3</div>
+                <div class="flex-1 h-6 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-success flex items-center justify-end px-2 text-xs" style="width: 94%">94%</div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="w-32 text-sm">Computer Lab 4</div>
+                <div class="flex-1 h-6 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-success flex items-center justify-end px-2 text-xs" style="width: 92%">92%</div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="w-32 text-sm">Computer Lab 5</div>
+                <div class="flex-1 h-6 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-danger flex items-center justify-end px-2 text-xs" style="width: 65%">65%</div>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-md font-bold mt-8 mb-4">Recent Alerts</h3>
+            <div class="space-y-3 max-h-64 overflow-y-auto">
+              <div class="bg-danger/10 border border-danger/30 rounded-lg p-3">
+                <div class="flex justify-between">
+                  <div class="font-bold text-sm">Computer Lab 5 Connectivity Issue</div>
+                  <div class="text-xs text-white/70">2h ago</div>
+                </div>
+                <p class="text-xs mt-1">Multiple devices experiencing packet loss and high latency.</p>
+              </div>
+              <div class="bg-warning/10 border border-warning/30 rounded-lg p-3">
+                <div class="flex justify-between">
+                  <div class="font-bold text-sm">Computer Lab 2 Bandwidth Degradation</div>
+                  <div class="text-xs text-white/70">5h ago</div>
+                </div>
+                <p class="text-xs mt-1">Bandwidth utilization above 85% during peak hours.</p>
+              </div>
+              <div class="bg-info/10 border border-info/30 rounded-lg p-3">
+                <div class="flex justify-between">
+                  <div class="font-bold text-sm">System Update Scheduled</div>
+                  <div class="text-xs text-white/70">1d ago</div>
+                </div>
+                <p class="text-xs mt-1">Network infrastructure update scheduled for this weekend.</p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const dropdowns = document.querySelectorAll(".dropdown");
+
+        document.addEventListener("click", function (event) {
+          dropdowns.forEach((dropdown) => {
+            if (!dropdown.contains(event.target)) {
+              dropdown.classList.remove("active");
+
+              const arrow = dropdown.querySelector(".dropdown-arrow");
+              if (arrow) {
+                arrow.style.transform = "rotate(0deg)";
+              }
+            }
+          });
+        });
+
+        dropdowns.forEach((dropdown) => {
+          const toggleButton = dropdown.querySelector(".dropdown-toggle");
+          const dropdownItems = dropdown.querySelectorAll(".dropdown-item");
+          const dropdownLabel = dropdown.querySelector(".dropdown-label");
+          const dropdownArrow = dropdown.querySelector(".dropdown-arrow");
+
+          toggleButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+
+            dropdowns.forEach((otherDropdown) => {
+              if (otherDropdown !== dropdown) {
+                otherDropdown.classList.remove("active");
+
+                const otherArrow = otherDropdown.querySelector(".dropdown-arrow");
+                if (otherArrow) {
+                  otherArrow.style.transform = "rotate(0deg)";
+                }
+              }
+            });
+
+            dropdown.classList.toggle("active");
+
+            if (dropdown.classList.contains("active")) {
+              dropdownArrow.style.transform = "rotate(180deg)";
+            } else {
+              dropdownArrow.style.transform = "rotate(0deg)";
+            }
+          });
+
+          dropdownItems.forEach((item) => {
+            item.addEventListener("click", function () {
+              dropdownLabel.textContent = item.textContent;
+
+              dropdown.classList.remove("active");
+
+              dropdownArrow.style.transform = "rotate(0deg)";
+
+              const selectedValue = item.getAttribute("data-value");
+              console.log(`Selected ${dropdown.id}: ${selectedValue}`);
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
