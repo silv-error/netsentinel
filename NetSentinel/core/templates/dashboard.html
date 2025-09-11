@@ -77,12 +77,12 @@
         fill: none;
         stroke: white;
         stroke-width: 2;
-        transition: all 1.5s ease-in-out; /* <-- Add this line */
+        transition: all 1.5s ease-in-out;
       }
 
       .chart-dot {
         fill: white;
-        transition: all 1.5s ease-in-out; /* <-- Add this line */
+        transition: all 1.5s ease-in-out;
       }
 
       .chart-grid {
@@ -382,7 +382,7 @@
     // * CHART
     function calculateAverage(numbers) {
       if (numbers.length === 0) {
-        return 0; // Return 0 or handle the case for an empty list
+        return 0;
       }
 
       const sum = numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
@@ -393,25 +393,21 @@
     const bandwidthDataElement = document.getElementById("bandwidthData");
 
     const updateBandwidthChart = () => {
-      // Generate random bandwidth consumption values for each day of the week
       const bandwidthData = Array.from({ length: 7 }, () => Math.floor(Math.random() * 20));
       const averageBandwidth = calculateAverage(bandwidthData);
       bandwidthDataElement.innerText = `${averageBandwidth.toFixed(2)}%`;
 
-      // Update the SVG path for the line chart
       const pathData = bandwidthData
         .map((value, index) => {
-          const x = 100 + index * 100; // X position for each day
-          const y = 300 - value * 10; // Y position based on value (scale it)
+          const x = 100 + index * 100;
+          const y = 300 - value * 10;
           return `${index === 0 ? "M" : "L"}${x},${y}`;
         })
         .join(" ");
 
-      // Update the path element
       const pathElement = document.querySelector(".chart-line");
       pathElement.setAttribute("d", pathData);
 
-      // Update the circle positions
       const circleElements = document.querySelectorAll(".chart-dot");
       circleElements.forEach((circle, index) => {
         const x = 100 + index * 100;
@@ -420,16 +416,14 @@
         circle.setAttribute("cy", y);
       });
 
-      // Update the text labels for the values
       const valueLabels = document.querySelectorAll(".value-label");
       valueLabels.forEach((label, index) => {
         label.textContent = bandwidthData[index];
       });
     };
 
-    // Call the update function every 5 seconds
     setInterval(updateBandwidthChart, 3000);
-    // Initial call to populate the chart
+
     updateBandwidthChart();
   </script>
 </html>
