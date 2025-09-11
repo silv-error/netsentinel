@@ -76,10 +76,12 @@
         fill: none;
         stroke: white;
         stroke-width: 2;
+        transition: all 1.5s ease-in-out;
       }
 
       .chart-dot {
         fill: white;
+        transition: all 1.5s ease-in-out;
       }
 
       .chart-grid {
@@ -300,19 +302,19 @@
                 <circle class="chart-dot" cx="600" cy="240" r="4" />
                 <circle class="chart-dot" cx="700" cy="120" r="4" />
 
-                <text x="100" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Monday</text>
-                <text x="200" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Tuesday</text>
-                <text x="300" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Wednesday</text>
-                <text x="400" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Thursday</text>
-                <text x="500" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Friday</text>
-                <text x="600" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Saturday</text>
-                <text x="700" y="320" text-anchor="middle" class="text-xs fill-white font-bold">Sunday</text>
+                <text x="100" y="320" text-anchor="middle" class="text-xs fill-white/70">Monday</text>
+                <text x="200" y="320" text-anchor="middle" class="text-xs fill-white/70">Tuesday</text>
+                <text x="300" y="320" text-anchor="middle" class="text-xs fill-white/70">Wednesday</text>
+                <text x="400" y="320" text-anchor="middle" class="text-xs fill-white/70">Thursday</text>
+                <text x="500" y="320" text-anchor="middle" class="text-xs fill-white/70">Friday</text>
+                <text x="600" y="320" text-anchor="middle" class="text-xs fill-white/70">Saturday</text>
+                <text x="700" y="320" text-anchor="middle" class="text-xs fill-white/70">Sunday</text>
 
-                <text x="30" y="300" text-anchor="end" class="text-xs fill-white font-bold">0</text>
-                <text x="30" y="240" text-anchor="end" class="text-xs fill-white font-bold">5</text>
-                <text x="30" y="180" text-anchor="end" class="text-xs fill-white font-bold">10</text>
-                <text x="30" y="120" text-anchor="end" class="text-xs fill-white font-bold">15</text>
-                <text x="30" y="60" text-anchor="end" class="text-xs fill-white font-bold">20</text>
+                <text x="30" y="300" text-anchor="end" class="text-xs fill-white/70">0</text>
+                <text x="30" y="240" text-anchor="end" class="text-xs fill-white/70">5</text>
+                <text x="30" y="180" text-anchor="end" class="text-xs fill-white/70">10</text>
+                <text x="30" y="120" text-anchor="end" class="text-xs fill-white/70">15</text>
+                <text x="30" y="60" text-anchor="end" class="text-xs fill-white/70">20</text>
               </svg>
             </div>
           </div>
@@ -320,6 +322,21 @@
       </main>
     </div>
   </body>
+
+  <!-- Modal -->
+  <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-gray-950 rounded-lg p-6 w-full max-w-sm text-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]">
+      <h3 class="text-lg font-bold text-white mb-4">Communication Successful!</h3>
+      <p class="text-slate-200 mb-6">The lab has successfully reconnected to the network.</p>
+      <button
+        onclick="closeModal()"
+        class="bg-success hover:bg-success/90 text-white font-bold py-2 px-4 rounded-md transition-colors"
+      >
+        OK
+      </button>
+    </div>
+  </div>
+
   <script>
     const labListElement = document.getElementById("labList");
     const selectedLabNameEls = document.querySelectorAll(".selectedLab");
@@ -343,6 +360,16 @@
         label: "UNREACHABLE",
       },
     };
+
+    function showModal() {
+      const modal = document.getElementById("successModal");
+      modal.classList.remove("hidden");
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("successModal");
+      modal.classList.add("hidden");
+    }
 
     // Generate random status for each lab
     function randomizeLabStatuses() {
@@ -412,6 +439,7 @@
 
       // Re-select the lab to update button state
       selectLab(selectedLabId);
+      showModal();
     }
 
     // Auto-update every 5 seconds
@@ -427,5 +455,54 @@
     randomizeLabStatuses();
     renderLabs();
     selectLab(5); // Default selected lab
+
+    // * CHART
+    function calculateAverage(numbers) {
+      if (numbers.length === 0) {
+        return 0; // Return 0 or handle the case for an empty list
+      }
+
+      const sum = numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      const average = sum / numbers.length;
+      return average;
+    }
+
+    const updateBandwidthChart = () => {
+      // Generate random bandwidth consumption values for each day of the week
+      const bandwidthData = Array.from({ length: 7 }, () => Math.floor(Math.random() * 20));
+
+      // Update the SVG path for the line chart
+      const pathData = bandwidthData
+        .map((value, index) => {
+          const x = 100 + index * 100; // X position for each day
+          const y = 300 - value * 10; // Y position based on value (scale it)
+          return `${index === 0 ? "M" : "L"}${x},${y}`;
+        })
+        .join(" ");
+
+      // Update the path element
+      const pathElement = document.querySelector(".chart-line");
+      pathElement.setAttribute("d", pathData);
+
+      // Update the circle positions
+      const circleElements = document.querySelectorAll(".chart-dot");
+      circleElements.forEach((circle, index) => {
+        const x = 100 + index * 100;
+        const y = 300 - bandwidthData[index] * 10;
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+      });
+
+      // Update the text labels for the values
+      const valueLabels = document.querySelectorAll(".value-label");
+      valueLabels.forEach((label, index) => {
+        label.textContent = bandwidthData[index];
+      });
+    };
+
+    // Call the update function every 5 seconds
+    setInterval(updateBandwidthChart, 3000);
+    // Initial call to populate the chart
+    updateBandwidthChart();
   </script>
 </html>
