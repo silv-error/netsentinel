@@ -28,7 +28,7 @@ async def main():
         
         # FILTER ALL DOWN INTERFACES USING DEEPSEEK AI
         down_interfaces = await query_deepseek(
-            query='Can you get all the interface with assigned IP Address and down in protocol? If none please dont respond',
+            query='Can you get all the interface with assigned IP Address and down in protocol? If none please dont respond nor say anything',
             cisco_output=interface_output,
             answer_format='''
                 Answer format:
@@ -38,7 +38,7 @@ async def main():
         
         # FILTER ALL UP INTERFACES USING DEEPSEEK AI
         up_interfaces = await query_deepseek(
-            query='Can you get all the interface with assigned IP address and up in protocol? If none please dont respond',
+            query='Can you get all the interface with assigned IP address and up in protocol? If none please dont respond nor say anything',
             cisco_output=interface_output,
             answer_format='''
                 Answer format:
@@ -48,7 +48,7 @@ async def main():
         
         # GET IP ADDRESSES WITH UP INTERFACES
         up_ip = await query_deepseek(
-            query='Can you get all the IP Address that is up protocol? If none pleasee dont respond',
+            query='Can you get all the IP Address that is up protocol? If none pleasee dont respond nor say anything',
             cisco_output=interface_output,
             answer_format='''
                 Answer format:
@@ -58,7 +58,7 @@ async def main():
         
         # GET IP ADDRESSES WITH DOWN INTERFACES
         down_ip = await query_deepseek(
-            query='Can you get all the IP Address that is down protocol? If none please dont respond',
+            query='Can you get all the IP Address that is down protocol? If none please dont respond nor say anything',
             cisco_output=interface_output,
             answer_format='''
                 Answer format:
