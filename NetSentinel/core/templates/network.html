@@ -225,7 +225,7 @@
         <div class="flex flex-col space-y-6">
           <div class="bg-black/20 rounded-lg p-6 border border-white/10">
             <h2 class="text-xl font-bold text-white mb-4">Recent Activities</h2>
-            <div class="space-y-3 max-h-64 overflow-y-auto pr-2">
+            <div class="space-y-3 max-h-64 overflow-y-auto pr-2" id="labList">
               <div
                 onclick="selectLab(this)"
                 data-lab="COMPUTER LAB #5"
@@ -321,20 +321,111 @@
     </div>
   </body>
   <script>
-    const statusDataElement = document.getElementById("statusData");
-    const compLab5Element = document.getElementById("compLab5");
+    const labListElement = document.getElementById("labList");
+    const selectedLabNameEls = document.querySelectorAll(".selectedLab");
+    const communicateBtn = document.querySelector("button[onclick='communicateToNetwork()']");
+    let selectedLabId = null;
+
+    const labs = [
+      { id: 5, name: "COMPUTER LAB #5", date: "March 07, 2025" },
+      { id: 6, name: "COMPUTER LAB #6", date: "March 07, 2025" },
+      { id: 7, name: "COMPUTER LAB #7", date: "March 07, 2025" },
+      { id: 8, name: "COMPUTER LAB #8", date: "March 07, 2025" },
+    ];
+
+    const statusMap = {
+      CONNECTED: {
+        class: "bg-success text-white",
+        label: "CONNECTED",
+      },
+      UNREACHABLE: {
+        class: "bg-gray-400/20 text-white",
+        label: "UNREACHABLE",
+      },
+    };
+
+    // Generate random status for each lab
+    function randomizeLabStatuses() {
+      labs.forEach((lab) => {
+        // Don't overwrite the selected lab if it's already CONNECTED manually
+        if (lab.id !== selectedLabId || lab.status !== "CONNECTED") {
+          lab.status = Math.random() > 0.5 ? "CONNECTED" : "UNREACHABLE";
+        }
+      });
+    }
+
+    // Render labs dynamically
+    function renderLabs() {
+      labListElement.innerHTML = ""; // Clear old items
+      labs.forEach((lab) => {
+        const statusClass = statusMap[lab.status].class;
+        const statusText = statusMap[lab.status].label;
+        const labDiv = document.createElement("div");
+        labDiv.className = `lab-entry cursor-pointer rounded-lg p-4 flex justify-between items-center border border-white/10 ${
+          lab.status === "CONNECTED" ? "bg-success/20" : "bg-gray-200/10"
+        }`;
+        labDiv.setAttribute("data-id", lab.id);
+        labDiv.onclick = () => selectLab(lab.id);
+
+        labDiv.innerHTML = `
+        <div>
+          <h3 class="font-bold">${lab.name}</h3>
+          <p class="text-sm text-white">${lab.date}</p>
+        </div>
+        <span class="status-label px-3 py-1 rounded-full text-xs font-bold ${statusClass} border border-white/10">
+          ${statusText}
+        </span>
+      `;
+        labListElement.appendChild(labDiv);
+      });
+    }
+
+    function selectLab(labId) {
+      const lab = labs.find((l) => l.id === labId);
+      if (!lab) return;
+      selectedLabId = labId;
+
+      // Update center title
+      selectedLabNameEls.forEach((el) => {
+        el.innerText = lab.name;
+      });
+
+      // Change button state based on current lab status
+      if (lab.status === "CONNECTED") {
+        communicateBtn.disabled = true;
+        communicateBtn.classList.add("opacity-50", "cursor-not-allowed");
+      } else {
+        communicateBtn.disabled = false;
+        communicateBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      }
+    }
 
     function communicateToNetwork() {
-      localStorage.setItem("status", JSON.stringify("Online"));
-      statusDataElement.innerText = "CONNECTED";
-      statusDataElement.classList.add("bg-green-600");
-      compLab5Element.classList.add("bg-success/20");
+      const lab = labs.find((l) => l.id === selectedLabId);
+      if (!lab || lab.status === "CONNECTED") return;
+
+      // Update status to CONNECTED
+      lab.status = "CONNECTED";
+
+      // Re-render lab list
+      renderLabs();
+
+      // Re-select the lab to update button state
+      selectLab(selectedLabId);
     }
 
-    function selectLab(selectedLab) {
-      const currentLab = document.querySelectorAll(".selectedLab");
-      const labNumber = selectedLab.getAttribute("data-lab");
-      currentLab.forEach((data) => (data.innerText = `${labNumber}`));
-    }
+    // Auto-update every 5 seconds
+    setInterval(() => {
+      randomizeLabStatuses();
+      renderLabs();
+      if (selectedLabId !== null) {
+        selectLab(selectedLabId);
+      }
+    }, 5000); // 5000 ms = 5 seconds
+
+    // Initial load
+    randomizeLabStatuses();
+    renderLabs();
+    selectLab(5); // Default selected lab
   </script>
 </html>
