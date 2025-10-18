@@ -8,7 +8,7 @@ async-timeout==3.0.1
 attrs==24.3.0
 audioop-lts==0.2.1
 bcrypt==4.3.0
-certifi==2024.12.14
+certifi>=2025.6.15
 cffi==1.17.1
 chardet==4.0.0
 charset-normalizer==3.4.0
@@ -66,6 +66,7 @@ requests==2.32.3
 rich==14.1.0
 rich-toolkit==0.15.0
 rignore==0.6.4
+selenium==4.35.0
 sentry-sdk==2.35.0
 shellingham==1.5.4
 six==1.17.0
@@ -75,9 +76,9 @@ starlette==0.47.2
 tqdm==4.67.1
 typer==0.16.1
 typing-inspection==0.4.0
-typing_extensions==4.12.2
+typing_extensions~=4.14.0
 tzdata==2025.2
-urllib3==2.2.3
+urllib3[socks]>=2.5.0,<3.0
 uvicorn==0.35.0
 watchfiles==1.1.0
 wcwidth==0.2.13
